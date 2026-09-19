@@ -59,4 +59,4 @@ docker build -t geai-brain-lite-test -f Dockerfile.test . && docker run --rm gea
 The full brain (governed outbound mailer, PII lane, weekly reflection, onboarding wizard, 17:00 owner scoreboard SMS, done-for-you install over SSH) is at
 **https://genuineempireai.com/p/geai-brain**.
 
-— GEAI Team · Genuine Empire LLC · hello@genuineempireai.com
+— GEAI Team · Genuine Empire AI LLC · hello@genuineempireai.com
