@@ -7,6 +7,8 @@ MIT. Stdlib-only Python + bash. Installs in 10 seconds into Claude Code, OpenCla
 git clone https://github.com/ElixirVitae1/geai-brain-lite.git && bash geai-brain-lite/install.sh
 ```
 
+2-min demo (terminal cards rendered from the real install log): https://www.youtube.com/watch?v=rkKqZZCaNBM
+
 The installer ends with its own proof line:
 
 ```
