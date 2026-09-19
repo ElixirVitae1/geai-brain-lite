@@ -1,0 +1,25 @@
+# Throwaway install test: clean Debian, python3 only, non-root user, run installer, exercise all 3 skills.
+FROM python:3.12-slim-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends bash curl ca-certificates && rm -rf /var/lib/apt/lists/* \
+ && useradd -m buyer
+USER buyer
+WORKDIR /home/buyer
+COPY --chown=buyer:buyer . /home/buyer/geai-brain-lite
+RUN mkdir -p /home/buyer/.openclaw
+CMD bash -c 'set -e; \
+  bash geai-brain-lite/install.sh; \
+  echo "--- second run (idempotent)"; bash geai-brain-lite/install.sh | tail -1; \
+  echo "--- skills linked"; ls -la ~/.claude/skills ~/.openclaw/skills; \
+  echo "--- rules block count (must be 1)"; grep -c "geai-brain-lite rules v1" ~/.claude/CLAUDE.md; \
+  echo "--- send-gate"; python3 ~/.geai-brain/skills/send-gate/send_gate.py check a@example.com "Hi" "no links" test --quiet-ok; \
+  python3 ~/.geai-brain/skills/send-gate/send_gate.py record a@example.com "Hi" "no links" test msg-1 >/dev/null; \
+  python3 ~/.geai-brain/skills/send-gate/send_gate.py check a@example.com "Hi" "no links" test --quiet-ok && exit 9 || echo "dedupe BLOCK ok"; \
+  python3 ~/.geai-brain/skills/send-gate/send_gate.py freeze >/dev/null; \
+  python3 ~/.geai-brain/skills/send-gate/send_gate.py check b@example.com "x" "y" test --quiet-ok && exit 9 || echo "freeze BLOCK ok"; \
+  python3 ~/.geai-brain/skills/send-gate/send_gate.py freeze off >/dev/null; \
+  echo "--- scoreboard"; python3 ~/.geai-brain/skills/truth-scoreboard/events.py log demo outreach email_sent --ref m1 >/dev/null; \
+  python3 ~/.geai-brain/skills/truth-scoreboard/events.py log demo stripe payment --cost 97 --ref pi_1 >/dev/null; \
+  python3 ~/.geai-brain/skills/truth-scoreboard/scoreboard.py; \
+  echo "--- verify"; bash ~/.geai-brain/skills/verify-on-claim/verify.sh file ~/.geai-brain/RULES.md; \
+  bash ~/.geai-brain/skills/verify-on-claim/verify.sh cron NOPE || echo "cron NO-CLAIM ok"; \
+  echo "INSTALL-TEST PASS"'
